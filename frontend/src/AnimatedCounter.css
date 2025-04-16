@@ -1,0 +1,51 @@
+.animated-counter {
+  display: flex;
+  font-family: monospace;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.animated-counter > div {
+  position: relative;
+  height: 1em;
+  width: 0.6em;
+  overflow: hidden;
+  margin: 0 1px;
+}
+
+.animated-counter b {
+  position: absolute;
+  display: block;
+  width: 100%;
+  text-align: center;
+  transition: margin-top 0.3s ease;
+}
+
+.animated-counter b::before {
+  content: attr(data-value);
+  display: block;
+}
+
+/* Animation styles */
+.animated-counter b.blur {
+  animation: flip 0.4s ease;
+}
+
+@keyframes flip {
+  0% {
+    margin-top: 0;
+    opacity: 1;
+    filter: blur(0);
+  }
+  50% {
+    margin-top: -1em;
+    opacity: 0.5;
+    filter: blur(2px);
+  }
+  100% {
+    margin-top: 0;
+    opacity: 1;
+    filter: blur(0);
+  }
+}

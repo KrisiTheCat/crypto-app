@@ -1,0 +1,514 @@
+:root {
+  --primary: #2c39b0;
+  --primary-dark: #1b0f77;
+  --secondary: #a29bfe;
+  --positive: #00b894;
+  --negative: #d63031;
+  --bg: #f5f6fa;
+  --card-bg: #ffffff;
+  --text: #2d3436;
+  --text-light: #636e72;
+  --border: #e0e0e0;
+  --tab-inactive: #e0e0e0;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.tab-content{
+  display: none;
+}
+
+.tab-content.active{
+  display: block;
+}
+
+.resetBtn{
+  position: absolute;
+  right: 20px;
+  top: 20px;
+}
+
+/* Account Balance Section */
+.account-section {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+  position: relative;
+  box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
+}
+
+.account-header {
+  margin-bottom: 20px;
+}
+
+.welcome-message {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.username {
+  font-weight: 700;
+}
+
+.portfolio-label {
+  opacity: 0.9;
+  font-size: 0.95rem;
+}
+
+.balance-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.balance-info {
+  flex: 1;
+}
+
+.balance-label {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-bottom: 5px;
+}
+
+.balance-amount {
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .balance-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  
+  .action-buttons {
+    width: 100%;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+}
+
+/* Tabs Navigation */
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  padding: 12px 24px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-light);
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  color: var(--primary);
+}
+
+.tab.active {
+  color: var(--primary);
+  border-bottom: 3px solid var(--primary);
+}
+
+
+/* Holdings Section */
+.holdings-section {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.crypto-icon img{
+  width: -webkit-fill-available;
+  border-radius: 50%;
+}
+
+.positive span:before {
+  content: '+';
+}
+
+.negative span:before {
+  content: '-';
+}
+
+.text-right{
+  text-align: end !important;
+}
+
+.holdings-section h3 {
+  color: var(--primary);
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+}
+
+.holdings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 15px;
+}
+
+.holding-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  transition: transform 0.2s ease;
+}
+
+.holding-card:hover {
+  transform: translateY(-3px);
+}
+
+.holding-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.holding-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.holding-details {
+  display: flex;
+  justify-content: space-between;
+}
+
+.holding-amount {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.holding-change {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Transactions Section */
+.transactions-section {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.transactions-section h3 {
+  color: var(--primary);
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+}
+
+.transactions-table {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  font-weight: 500;
+}
+
+.transaction-header {
+  display: contents;
+}
+
+.transaction-header > div {
+  font-weight: 600;
+  color: var(--text-light);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.transaction-row {
+  display: contents;
+}
+
+.transaction-row > div {
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+}
+
+.transaction-type {
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+
+.transaction-type.buy div{
+  background-color: rgba(0, 184, 148, 0.1);
+  color: var(--positive);
+}
+
+.transaction-type.sell div{
+  background-color: rgba(214, 48, 49, 0.1);
+  color: var(--negative);
+}
+
+.transaction-holdings {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0px !important;
+  img{
+    height: 28px;
+    border-radius: 50%;
+  }
+}
+
+.btn.disabled{
+  background-color: #636e72 !important;
+  border-color: #424242 !important;
+}
+
+.currency-switcher{
+  border: none;
+  border-radius: 5px;
+  padding: 2px 7px;
+}
+
+.crypto-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--primary);
+}
+
+.crypto-icon.small {
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+}
+
+.transaction-status {
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.transaction-status.completed {
+  background-color: rgba(0, 184, 148, 0.1);
+  color: var(--positive);
+}
+
+.transaction-status.pending {
+  background-color: rgba(253, 203, 110, 0.2);
+  color: #f39c12;
+}
+
+/* Market Section */
+.market-section {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.market-section h3 {
+  color: var(--primary);
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+}
+
+.crypto-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+}
+
+.crypto-table th {
+  text-align: left;
+  padding: 15px 20px;
+  color: var(--text-light);
+  font-weight: 500;
+  background-color: var(--card-bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.crypto-table td {
+  padding: 15px 20px;
+  background-color: var(--card-bg);
+  vertical-align: middle;
+}
+
+.crypto-table tr {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.crypto-table tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.crypto-name {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  gap: 10px;
+}
+
+.price {
+  font-weight: 600;
+}
+
+.change {
+  font-weight: 600;
+}
+
+.positive {
+  color: var(--positive);
+}
+
+.negative {
+  color: var(--negative);
+}
+
+.rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 50%;
+  margin-right: 10px;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
+.trade-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  border: none;
+}
+
+.crypto-symbol {
+  color: gray;
+}
+
+.last-updated {
+  text-align: right;
+  color: var(--text-light);
+  font-size: 0.9em;
+  margin-top: 30px;
+  padding: 10px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .account-section {
+      flex-direction: column;
+      gap: 20px;
+      text-align: center;
+  }
+
+  .action-buttons {
+      width: 100%;
+      flex-direction: column;
+  }
+
+  .btn {
+      width: 100%;
+  }
+
+  .holdings-grid {
+      grid-template-columns: 1fr;
+  }
+
+  .transactions-table {
+      display: block;
+  }
+
+  .transaction-header {
+      display: none;
+  }
+
+  .transaction-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border);
+  }
+
+  .transaction-row > div {
+      border-bottom: none;
+      padding: 0;
+  }
+
+  .transaction-row > div::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: var(--text-light);
+      margin-right: 10px;
+      font-size: 0.85rem;
+  }
+
+  .transaction-type {
+      grid-column: span 2;
+  }
+
+  .crypto-table {
+      display: block;
+      overflow-x: auto;
+  }
+
+  .trade-actions {
+      flex-direction: column;
+  }
+}
