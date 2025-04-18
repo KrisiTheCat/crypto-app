@@ -32,6 +32,8 @@ public class CryptoService implements CommandLineRunner {
     private List<Crypto> cryptoList;
     private Map<Long, SnapshotResponse> snapshot = new HashMap<>();
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     /**
      * Executed on application startup to connect to a WebSocket server.
      * Subscribes to real-time cryptocurrency data from the Kraken API.
@@ -83,7 +85,7 @@ public class CryptoService implements CommandLineRunner {
      * @return The {@link Crypto} entity
      * @throws RuntimeException if the cryptocurrency is not found
      */
-    public Crypto getCrypto(Long id) {
+    public Crypto getById(Long id) {
         Optional<Crypto> crypto = cryptoRepository.findById(id);
         if (crypto.isEmpty()) {
             throw new RuntimeException("ERROR: no crypto with id=" + id);
@@ -115,8 +117,6 @@ public class CryptoService implements CommandLineRunner {
         return getCryptoSnapshot(crypto.getId());
     }
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     /**
      * Parses ticker data received from the WebSocket and updates the snapshot with the latest data.
      * @param json The raw JSON string containing the ticker data
@@ -130,11 +130,11 @@ public class CryptoService implements CommandLineRunner {
             if (dataNode != null && dataNode.isArray() && dataNode.size() > 0) {
                 for (int i = 0; i < dataNode.size(); i++) {
                     SnapshotResponse response = objectMapper.treeToValue(dataNode.get(i), SnapshotResponse.class);
-                    List<Crypto> crypto = cryptoRepository.findBySymbol(response.getOnlySymbol());
+                    Optional<Crypto> crypto = cryptoRepository.findBySymbol(response.getOnlySymbol());
                     if (crypto.isEmpty()) {
                         throw new Exception("No crypto with symbol " + response.getOnlySymbol() + " found");
                     }
-                    snapshot.put(crypto.get(0).getId(), response);
+                    snapshot.put(crypto.get().getId(), response);
                 }
             } else {
                 throw new IllegalArgumentException("Invalid or empty data array");

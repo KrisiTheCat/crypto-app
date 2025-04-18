@@ -38,7 +38,7 @@ public class CryptoController {
         try {
             return ResponseEntity.ok(cryptoService.getSnapshot()
                     .entrySet().stream()
-                    .map(entry -> new SnapshotDTO(entry.getValue(), cryptoService.getCrypto(entry.getKey())))
+                    .map((entry) -> new SnapshotDTO(entry.getValue(), cryptoService.getById(entry.getKey())))
                     .collect(Collectors.toList()));
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

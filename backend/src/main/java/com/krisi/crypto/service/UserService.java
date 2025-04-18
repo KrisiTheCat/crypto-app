@@ -24,7 +24,7 @@ public class UserService {
      * @return List of all {@link User} objects
      */
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.getAllUsers();
     }
 
     /**
@@ -33,7 +33,7 @@ public class UserService {
      * @return The saved {@link User} object
      */
     public User createUser(User user) {
-        return userRepository.save(user);
+        return userRepository.createUser(user);
     }
 
     /**
@@ -43,7 +43,7 @@ public class UserService {
      * @throws UserNotFoundException If the user with the provided ID does not exist
      */
     public User getUserInfo(Long id) throws UserNotFoundException {
-        return userRepository.findById(id)
+        return userRepository.getById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with ID " + id + " doesn't exist"));
     }
 
@@ -62,8 +62,7 @@ public class UserService {
             newBalance += transaction.getPrice();
         }
 
-        user.setBalance(newBalance);
-        return userRepository.save(user); // Save after updating balance
+        return userRepository.updateBalance(user.getId(), newBalance);
     }
 
     /**
@@ -81,8 +80,7 @@ public class UserService {
             newBalance -= transaction.getPrice();
         }
 
-        user.setBalance(newBalance);
-        return userRepository.save(user); // Save after updating balance
+        return userRepository.updateBalance(user.getId(), newBalance);
     }
 
     /**
@@ -91,7 +89,7 @@ public class UserService {
      * @return The saved {@link User} object
      */
     public User saveUser(User user) {
-        return userRepository.save(user);
+        return userRepository.createUser(user);
     }
 
     /**
@@ -100,12 +98,7 @@ public class UserService {
      * @return The {@link User} object after the reset, or null if no user was found
      */
     public User resetUser(Long id) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    user.setBalance(10000);
-                    return userRepository.save(user);
-                })
-                .orElse(null);
+        return userRepository.updateBalance(id, 10000);
     }
 
     /**

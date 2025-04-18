@@ -61,17 +61,13 @@ public class UserController {
 
             UserDTO userDTO = new UserDTO(
                     user,
-                    user.getTransactions()
+                    transactionService.getAllTransactionsByUser(id)
                             .stream()
-                            .map(transaction -> {
-                                return new TransactionDTO(transaction);
-                            })
+                            .map(TransactionDTO::new)
                             .collect(Collectors.toList()),
-                    user.getHoldings()
+                    holdingService.getAllByUser(id)
                             .stream()
-                            .map(holding -> {
-                                return new HoldingDTO(holding, cryptoService.getCryptoSnapshot(holding.getCrypto()));
-                            })
+                            .map(holding -> new HoldingDTO(holding, cryptoService.getCryptoSnapshot(holding.getCrypto())))
                             .collect(Collectors.toList()));
             return ResponseEntity.ok(userDTO);
         } catch (Exception e) {

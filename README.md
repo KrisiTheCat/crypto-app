@@ -60,3 +60,4 @@ npm run start
  ## 📷 Screenshots
 
  You can find some screenshots of the app in the /screenshots folder
+ ![alternative](https://github.com/KrisiTheCat/crypto-app/main/screenshots/homepage.png)

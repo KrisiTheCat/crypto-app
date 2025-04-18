@@ -76,7 +76,7 @@ export const Market = () => {
             var temp = accountInfo.holdings.find((holding) => holding.symbol === item.symbol).quantity;
             setBalance(temp);
             if(formatQuantity(temp) == 0) setAmount(0.01);
-            else setAmount(Math.min(0.001, formatQuantity(temp)));
+            else setAmount(Math.min(minValue, formatQuantity(temp)));
         }
 
         setShowModal(true);
@@ -88,9 +88,9 @@ export const Market = () => {
     };
 
     const handleAmountChange = (e) => {
-        e.target.value = formatQuantity(e.target.value);
-        e.target.value = Math.max(e.target.value, minValueCrypto);
-        e.target.value = Math.min(e.target.value, 100000);
+        // e.target.value = formatQuantity(e.target.value);
+        // e.target.value = Math.max(e.target.value, minValueCrypto);
+        // e.target.value = Math.min(e.target.value, 100000);
         setAmount(e.target.value);
     };
 
@@ -103,9 +103,9 @@ export const Market = () => {
         fiatValue = formatMoney(amountNum * currentTrade.crypto.price);
         
         if(currentTrade.action === "BUY")
-            ableToDoTransaction = (fiatValue <= availableBalance + 0.00001 ? true : false);
+            ableToDoTransaction = ((fiatValue <= availableBalance + 0.00001 && amountNum>=minValueCrypto) ? true : false);
         else
-            ableToDoTransaction = (cryptoValue <= availableBalance + 0.00001 ? true : false);
+            ableToDoTransaction = ((cryptoValue <= availableBalance + 0.00001 && amountNum>=minValueCrypto) ? true : false);
 
         return `$${fiatValue}`;
     };
@@ -116,8 +116,8 @@ export const Market = () => {
         if (!currentTrade) return;
         
         const amountNum = parseFloat(amount) || 0;
-        if (amountNum <= 0) {
-            alert('Please enter a valid amount');
+        if (amountNum < minValueCrypto) {
+            toast.error('Please enter a valid amount');
             return;
         }
         
@@ -148,7 +148,7 @@ export const Market = () => {
     }
 
     const formatMoney = (a) =>{
-        return parseFloat(a).toFixed(2);
+        return (Math.floor(a*100)/100).toFixed(2);
     }
   
     if (accountInfo.length < 1) {

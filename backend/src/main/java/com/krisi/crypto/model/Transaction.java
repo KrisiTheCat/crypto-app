@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 
 
@@ -17,7 +18,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Transaction {
+public class Transaction implements Serializable {
     @Id
     @GeneratedValue (strategy = GenerationType.AUTO)
     private Long id;
@@ -26,7 +27,10 @@ public class Transaction {
     @JoinColumn(name = "user_id")
     private User user;
     @ManyToOne
+    @JoinColumn(name = "crypto_id")
     private Crypto crypto;
+
+    @Enumerated(EnumType.STRING)
     private TransactionMethod method;
     private double quantity;
     private double price;

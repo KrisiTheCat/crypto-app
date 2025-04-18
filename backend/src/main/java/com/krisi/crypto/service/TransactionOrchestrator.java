@@ -16,8 +16,14 @@ public class TransactionOrchestrator {
     private UserService userService;
     @Autowired
     private HoldingService holdingService;
+    @Autowired
+    private TransactionService transactionService;
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionOrchestrator.class);
+
+    boolean userUpdated;
+    boolean holdingUpdated;
+    boolean transactionUpdated;
 
     /**
      * Executes a transaction order and ensures all operations are consistent and atomic.
@@ -29,11 +35,15 @@ public class TransactionOrchestrator {
     public Transaction execute(TransactionRequest request) throws Exception {
         logger.info("Received transaction order: {}", request.toString());
         Transaction transaction = null;
+        userUpdated = false;
+        holdingUpdated = false;
+        transactionUpdated = false;
 
         try {
             validateRequest(request);
 
-            Crypto crypto = cryptoService.getCrypto(request.getCryptoId());
+            System.out.println(request.toString());
+            Crypto crypto = cryptoService.getById(request.getCryptoId());
 
             SnapshotResponse snapshotResponse = cryptoService.getCryptoSnapshot(crypto);
 
@@ -41,7 +51,7 @@ public class TransactionOrchestrator {
 
             User user = userService.getUserInfo(request.getUserId());
 
-            transaction = create(request, user, crypto, snapshotResponse);
+            transaction = createTransaction(request, user, crypto, snapshotResponse);
 
             handleRequest(transaction, user);
 
@@ -52,6 +62,7 @@ public class TransactionOrchestrator {
 
             if (transaction != null) {
                 logger.error("Failed transaction: {}", transaction.toString());
+                compensate(transaction);
             }
             throw e;
         }
@@ -82,7 +93,7 @@ public class TransactionOrchestrator {
      * @param snapshotResponse The snapshot response of the crypto price.
      * @return A newly created Transaction object.
      */
-    private Transaction create(TransactionRequest request, User user, Crypto crypto, SnapshotResponse snapshotResponse) {
+    private Transaction createTransaction(TransactionRequest request, User user, Crypto crypto, SnapshotResponse snapshotResponse) {
         TransactionMethod method = TransactionMethod.valueOf(request.getMethod());
         double price = request.getQuantity() * snapshotResponse.getLast();
 
@@ -103,10 +114,13 @@ public class TransactionOrchestrator {
         } else {
             handleSell(transaction, user);
         }
+        holdingUpdated = true;
 
-        user.getTransactions().add(transaction);
+        transactionService.createTransaction(transaction);
+        transactionUpdated = true;
+
         userService.updateBalance(transaction);
-        userService.saveUser(user);
+        userUpdated = true;
     }
 
     /**
@@ -135,10 +149,8 @@ public class TransactionOrchestrator {
      * @throws Exception If the user does not have enough crypto for the transaction.
      */
     private void handleSell(Transaction transaction, User user) throws Exception {
-        Holding existingHolding = user.getHoldingOf(transaction.getCrypto()).orElseThrow(
-                () -> new Exception("Not enough crypto to complete the sell transaction"));
-
-        if (transaction.getQuantity() - existingHolding.getQuantity() > 0.00001) {
+        Holding existingHolding = holdingService.getByUserIdAndCryptoId(user.getId(), transaction.getCrypto().getId());
+        if (existingHolding == null || transaction.getQuantity() - existingHolding.getQuantity() > 0.00001) {
             throw new Exception("Not enough crypto to sell");
         }
 
@@ -155,15 +167,22 @@ public class TransactionOrchestrator {
         try {
             User user = transaction.getUser();
 
-            Holding holding = new Holding(null, user, transaction.getCrypto(), transaction.getQuantity(), transaction.getPrice());
-            if (transaction.getMethod() == TransactionMethod.BUY) {
-                holdingService.removeHolding(holding);
-            } else {
-                holdingService.addHolding(holding);
+            if(holdingUpdated) {
+                Holding holding = new Holding(null, user, transaction.getCrypto(), transaction.getQuantity(), transaction.getPrice());
+                if (transaction.getMethod() == TransactionMethod.BUY) {
+                    holdingService.removeHolding(holding);
+                } else {
+                    holdingService.addHolding(holding);
+                }
             }
 
-            user.getTransactions().remove(transaction);
-            userService.refundTransaction(transaction);
+            if(transactionUpdated){
+                transactionService.deleteTransaction(transaction.getId());
+            }
+
+            if(userUpdated){
+                userService.refundTransaction(transaction);
+            }
 
             logger.info("Compensation actions completed successfully for transaction: {}", transaction.toString());
         } catch (Exception e) {

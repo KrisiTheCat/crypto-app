@@ -23,7 +23,7 @@ public class TransactionService {
      * @return List of all {@link Transaction} objects
      */
     public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+        return transactionRepository.getAllTransactions();
     }
 
     /**
@@ -32,7 +32,7 @@ public class TransactionService {
      * @return List of {@link Transaction} objects associated with the given user
      */
     public List<Transaction> getAllTransactionsByUser(Long id) {
-        return transactionRepository.findByUserId(id);
+        return transactionRepository.getAllByUser(id);
     }
 
     /**
@@ -41,7 +41,7 @@ public class TransactionService {
      * @return The saved {@link Transaction} object
      */
     public Transaction createTransaction(Transaction transaction) {
-        return transactionRepository.save(transaction);
+        return transactionRepository.createTransaction(transaction);
     }
 
     /**
@@ -49,7 +49,7 @@ public class TransactionService {
      * @param id The ID of the transaction to be deleted
      */
     public void deleteTransaction(Long id) {
-        transactionRepository.deleteById(id);
+        transactionRepository.deleteTransaction(id);
     }
 
     /**
@@ -57,6 +57,6 @@ public class TransactionService {
      * @param user The {@link User} whose transactions should be deleted
      */
     public void resetUser(User user) {
-        transactionRepository.deleteAllInBatch(user.getTransactions());
+        transactionRepository.deleteAllForUser(user.getId());
     }
 }

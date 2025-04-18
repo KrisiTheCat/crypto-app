@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * Entity representing a cryptocurrency.
  * Contains information such as the cryptocurrency's ID, symbol, and name.
@@ -16,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Crypto {
+public class Crypto implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

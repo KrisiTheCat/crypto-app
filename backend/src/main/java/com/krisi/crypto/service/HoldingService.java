@@ -31,7 +31,17 @@ public class HoldingService {
      * @return List of all {@link Holding} objects
      */
     public List<Holding> getAllHoldings() {
-        return holdingRepository.findAll();
+        return holdingRepository.getAllHoldings();
+    }
+
+    public List<Holding> getAllByUser(Long userId){
+        return holdingRepository.getAllByUser(userId);
+    }
+
+    public Holding getByUserIdAndCryptoId(Long userId, Long cryptoId){
+        Optional<Holding> optionalHolding = holdingRepository.getByUserIdAndCryptoId(userId, cryptoId);
+        if(optionalHolding.isEmpty()) return null;
+        return optionalHolding.get();
     }
 
     /**
@@ -40,14 +50,15 @@ public class HoldingService {
      * @param holding The {@link Holding} object to add
      */
     public void addHolding(Holding holding) {
-        Optional<Holding> optionalHolding = holding.getUser().getHoldingOf(holding.getCrypto());
+        Optional<Holding> optionalHolding = holdingRepository.getByUserIdAndCryptoId(holding.getUser().getId(), holding.getCrypto().getId());
         if (optionalHolding.isPresent()) {
             // If the user already holds the crypto, update the existing holding's quantity and investment
             Holding holdingOld = optionalHolding.get();
             holdingOld.setQuantity(holding.getQuantity() + holdingOld.getQuantity());
             holdingOld.setInvestment(holding.getInvestment() + holdingOld.getInvestment());
+            holdingRepository.updateHolding(holdingOld);
         } else {
-            holding.getUser().getHoldings().add(holding);
+            holdingRepository.createHolding(holding);
         }
     }
 
@@ -57,18 +68,18 @@ public class HoldingService {
      * @param holding The {@link Holding} object to remove
      * @throws RuntimeException if the holding doesn't exist in the user's portfolio
      */
-    public void removeHolding(Holding holding) {
-        Optional<Holding> optionalHolding = holding.getUser().getHoldingOf(holding.getCrypto());
+    public void removeHolding(Holding holding) throws Exception{
+        Optional<Holding> optionalHolding = holdingRepository.getByUserIdAndCryptoId(holding.getUser().getId(), holding.getCrypto().getId());
         if (optionalHolding.isPresent()) {
             Holding holdingOld = optionalHolding.get();
             if (Math.abs(holdingOld.getQuantity() - holding.getQuantity()) <= 0.000001) {
                 // If the quantity matches exactly, remove the holding completely
-                holding.getUser().getHoldings().remove(holdingOld);
-                holdingRepository.delete(holdingOld);
+                holdingRepository.deleteHolding(holdingOld.getId());
                 return;
             }
             holdingOld.setQuantity(holdingOld.getQuantity() - holding.getQuantity());
             holdingOld.setInvestment(holdingOld.getInvestment() - holding.getInvestment());
+            holdingRepository.updateHolding(holdingOld);
         } else {
             throw new RuntimeException("Trying to remove a nonexistent holding");
         }
@@ -79,6 +90,6 @@ public class HoldingService {
      * @param user The {@link User} whose holdings should be deleted
      */
     public void resetUser(User user) {
-        holdingRepository.deleteAllInBatch(user.getHoldings());
+        holdingRepository.deleteAllForUser(user.getId());
     }
 }
